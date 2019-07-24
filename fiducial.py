@@ -1,0 +1,14 @@
+from typing import Optional, List, Tuple
+import numpy as np
+from nptyping import Array
+
+class Fiducial(object):
+    def __init__(self, pose: Array[np.float64, ..., 3], id: int) -> None:
+        self._pose = pose
+        self._id = id
+
+    def pose(self) ->  Array[np.float64, ..., 3]:
+        return self._pose
+
+    def id(self) -> int:
+        return self._id
