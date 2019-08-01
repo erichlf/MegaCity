@@ -1,4 +1,4 @@
-from typing import Tuple, List, Optional
+from typing import List, Set, Optional
 import numpy as np
 from nptyping import Array
 from robot import Robot
@@ -15,13 +15,6 @@ class Simulator(object):
         self._fiducials = fiducials
         self._state = {robot: robot.pose() for robot in self._robots}
         self._world_size = world_size
-
-    def _get_nearest_fiducial(self, location: Tuple[float, float], k: int=2) -> List[Fiducial]:
-        '''
-        finds the kth closest fiducials to the given location.
-        location - (x, y)
-        '''
-        return self._fiducials.query(location, k=k)
 
     def simulate_true_move(self, robot: Robot, turn: float, forward: float) -> None:
         '''
@@ -43,13 +36,19 @@ class Simulator(object):
 
         self._state[robot] = (x, y, theta)
 
-    def run(self) -> None:
-        for step in range(1, self._monte_carlo_steps + 1):
-            for robot in self._robots:
-                # get a random turn and forward
-                delta = (random.uniform(0, 2 * pi), random.uniform(0, 1))
-                # have the robot move to the true location
-                self.simulate_true_move(robot, delta[0], delta[1])
-                # have the robot itself move (robot will move with some error)
-                robot.move(delta[0], delta[1])
-                seen = robot.find_fiducials(self._fiducials)
+    def run(self) -> List[Fiducial]:
+        seen = set()
+#        for step in range(1, self._monte_carlo_steps + 1):
+        for robot in self._robots:
+            # get a random turn and forward
+            # delta = (random.uniform(0, 2 * pi), random.uniform(0, 1))
+            # have the robot move to the true location
+            # self.simulate_true_move(robot, delta[0], delta[1])
+            # have the robot itself move (robot will move with some error)
+            # robot.move(delta[0], delta[1])
+            found = robot.find_fiducials(self._fiducials)
+            seen = seen.union(found)
+            for fiducial in found:
+                print("Robot - {} saw:\n{}".format(robot.id(), fiducial))
+
+        return list(seen)

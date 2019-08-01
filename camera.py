@@ -1,5 +1,5 @@
 import sys
-from typing import Optional, Tuple, List
+from typing import Optional, List
 import numpy as np
 from nptyping import Array
 from math import pi, atan, sqrt
@@ -67,28 +67,32 @@ class Camera(object):
         '''
         Check the visibility of the image point(s)
         '''
+        # @TODO: make sure object is not behind camera
         return (image_pts[:, 0] >=0) & (image_pts[:, 1] >= 0) & \
                (image_pts[:, 0] < self._aspect_ratio[0]) & \
                (image_pts[:, 1] < self._aspect_ratio[1])
 
-    def is_visible(self, world_pts: Array[np.float64]) -> bool:
+    def is_visible(self, R_robot: Array[np.float64, 3, 3],
+                   t_robot: Array[np.float64, 3, 1],
+                   world_pts: Array[np.float64]) -> bool:
         '''
         Check the visibility of the world point(s)
         '''
-        return self._is_visible_xy(self._world_to_image(world_pts))
+        return self._is_visible_xy(self._world_to_image(R_robot, t_robot, world_pts))
 
-    def _world_to_image(self, world_pts: Array[np.float64, ..., 3]) -> Array[np.float64, ..., 2]:
+    def _world_to_image(self, R_robot: Array[np.float64, 3, 3],
+                        t_robot: Array[np.float64, 3, 1],
+                        world_pts: Array[np.float64, ..., 3]) -> Array[np.float64, ..., 2]:
         '''
         Project world coordinates to image coordinates.
         '''
-        #if world_pts.shape[1] == 3:
-        #    world_pts = euclidean_to_homogeneous(world_pts)
-        #else:
-        #    homogeneous = True
-
-        #assert(world_pts.shape[1] == 4)
-        image_coords = cv2.projectPoints(world_pts, cv2.Rodrigues(self._R)[0],
-                                         self._t, self._cameraMatrix, None)[0].reshape(-1, 2)
+        # The world to camera transform, in block form, is
+        # [[R_robot, t_robot], [0, 1]] * [[self._R, self._t], [0, 1]]
+        # = [[R_robot * self._R, R_robot * self._t + t_robot], [0, 1]]
+        image_coords = cv2.projectPoints(world_pts,
+                                         cv2.Rodrigues(np.matmul(R_robot, self._R))[0],
+                                         np.matmul(R_robot, self._t) + t_robot,
+                                         self._cameraMatrix, None)[0].reshape(-1, 2)
 
         return image_coords # if homogeneous else homogeneous_to_euclidean(image_coords)
 

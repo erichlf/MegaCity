@@ -1,4 +1,4 @@
-from typing import Optional, List, Tuple
+from typing import Optional, List
 import numpy as np
 from nptyping import Array
 
@@ -12,3 +12,6 @@ class Fiducial(object):
 
     def id(self) -> int:
         return self._id
+
+    def __str__(self):
+        return "id: {self._id}\npose={self._pose}".format(self=self)
