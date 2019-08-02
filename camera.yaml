@@ -1,14 +1,14 @@
 cameraMatrix:
-    - [1225.2, 0, 480.0]
-    - [0.0, 1225.2, 384.0]
+    - [0.5, 0, 480.0]
+    - [0.0, 0.5, 384.0]
     - [0.0, 0.0, 1.0]
 # the below setting will make the camera and robot location identical
 R:
     - [1.0, 0.0, 0.0]
     - [0.0, 1.0, 0.0]
     - [0.0, 0.0, 1.0]
-aspect_ratio: [1920, 1080]
 t:
     - [0.0]
     - [0.0]
     - [0.0]
+aspect_ratio: [960, 768]
