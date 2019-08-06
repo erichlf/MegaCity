@@ -48,7 +48,8 @@ class Simulator(object):
             # robot.move(delta[0], delta[1])
             found = robot.find_fiducials(self._fiducials)
             seen = seen.union(found)
+            print("Robot - {} saw:".format(robot))
             for fiducial in found:
-                print("Robot - {} saw:\n{}".format(robot.id(), fiducial))
+                print("\tFiducial - {}".format(fiducial))
 
         return list(seen)

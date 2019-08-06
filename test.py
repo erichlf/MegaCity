@@ -45,14 +45,14 @@ def main() -> int:
                                      dtype=np.float64), i)
         fiducials.append(fiducial)
     '''
-    fiducials.append(Fiducial(np.array([[1, 0, 1]], dtype=np.float64), 0))
-    fiducials.append(Fiducial(np.array([[1, 1, 1]], dtype=np.float64), 1))
-    fiducials.append(Fiducial(np.array([[0, 1, 1]], dtype=np.float64), 2))
-    fiducials.append(Fiducial(np.array([[-1, 1, 1]], dtype=np.float64), 3))
-    fiducials.append(Fiducial(np.array([[-1, 0, 1]], dtype=np.float64), 4))
-    fiducials.append(Fiducial(np.array([[-1, -1, 1]], dtype=np.float64), 5))
-    fiducials.append(Fiducial(np.array([[0, -1, 1]], dtype=np.float64), 6))
-    fiducials.append(Fiducial(np.array([[1, -1, 1]], dtype=np.float64), 7))
+    fiducials.append(Fiducial(np.array([[1], [0], [1]], dtype=np.float64), 0))
+    fiducials.append(Fiducial(np.array([[1], [1], [1]], dtype=np.float64), 1))
+    fiducials.append(Fiducial(np.array([[0], [1], [1]], dtype=np.float64), 2))
+    fiducials.append(Fiducial(np.array([[-1], [1], [1]], dtype=np.float64), 3))
+    fiducials.append(Fiducial(np.array([[-1], [0], [1]], dtype=np.float64), 4))
+    fiducials.append(Fiducial(np.array([[-1], [-1], [1]], dtype=np.float64), 5))
+    fiducials.append(Fiducial(np.array([[0], [-1], [1]], dtype=np.float64), 6))
+    fiducials.append(Fiducial(np.array([[1], [-1], [1]], dtype=np.float64), 7))
 
     seen = Simulator(robots, fiducials, world_size=np.array([world_length,
                                                              world_width])).run()  # run the simulation
