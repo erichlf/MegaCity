@@ -45,7 +45,9 @@ def main() -> int:
                                      dtype=np.float64), i)
         fiducials.append(fiducial)
     '''
-    fiducials.append(Fiducial(np.array([[1], [0], [1]], dtype=np.float64), 0))
+    fiducials.append(Fiducial(np.array([[1, 1, 1, 1],
+                                        [0, 0.1, 0.1, 0],
+                                        [1, 1, 0.9, 0.9]], dtype=np.float64), 0))
     fiducials.append(Fiducial(np.array([[1], [1], [1]], dtype=np.float64), 1))
     fiducials.append(Fiducial(np.array([[0], [1], [1]], dtype=np.float64), 2))
     fiducials.append(Fiducial(np.array([[-1], [1], [1]], dtype=np.float64), 3))

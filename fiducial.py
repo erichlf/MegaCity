@@ -1,9 +1,8 @@
-from typing import Optional, List
 import numpy as np
 from nptyping import Array
 
 class Fiducial(object):
-    def __init__(self, pose: List[Array[np.float64, 3, ...]], id: int) -> None:
+    def __init__(self, pose: Array[np.float64, 3, ...], id: int) -> None:
         self._pose = pose
         self._id = id
 

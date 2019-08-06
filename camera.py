@@ -73,10 +73,10 @@ class Camera(object):
         camera_pts = robot_to_camera.dot(robot_pts_h_swapped)  # [3x1]
 
 
-        if isclose(camera_pts[2, :], 0, abs_tol=1e-15):
+        if not all(camera_pts[2, :] > 1e-15):
             return False
 
         image_pts = self._camera_matrix.dot(camera_pts)  # [[u], [v], [w]]
-        image_pts_h = ((image_pts.T / image_pts[-1, :]).T)  # [[u/w], [v/w]]
+        image_pts_h = ((image_pts.T / image_pts[-1, :].reshape((image_pts.shape[1],1))).T)  # [[u/w], [v/w]]
 
-        return all(camera_pts[2, :] > 0 & self._is_visible_xy(image_pts_h))
+        return all(camera_pts[2, :] > 1e-15) and all(self._is_visible_xy(image_pts_h))
