@@ -25,8 +25,8 @@ class Robot(object):
         '''
         Takes the current pose and creates our robot matrix from it
         '''
-        self._R = np.array([[cos(self._pose[2]), sin(self._pose[2]), 0],
-                            [-sin(self._pose[2]), cos(self._pose[2]), 0],
+        self._R = np.array([[cos(self._pose[2]), -sin(self._pose[2]), 0],
+                            [sin(self._pose[2]), cos(self._pose[2]), 0],
                             [0, 0, 1]],
                            dtype=np.float64)
         self._t = np.array([[self._pose[0]],

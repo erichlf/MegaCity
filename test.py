@@ -28,6 +28,10 @@ def main() -> int:
                         world_size=np.array([world_length, world_width])))
     robots.append(Robot(7, pose=np.array([[0], [0], [7 * pi / 4]], dtype=np.float64),
                         world_size=np.array([world_length, world_width])))
+    robots.append(Robot(8, pose=np.array([[-1], [1], [0]], dtype=np.float64),
+                        world_size=np.array([world_length, world_width])))
+    robots.append(Robot(9, pose=np.array([[-1], [1], [pi / 4]], dtype=np.float64),
+                        world_size=np.array([world_length, world_width])))
 
     for robot in robots:
         # create, initialize, and attach camera to robot
@@ -58,15 +62,6 @@ def main() -> int:
 
     seen = Simulator(robots, fiducials, world_size=np.array([world_length,
                                                              world_width])).run()  # run the simulation
-    '''
-    if seen is not None:
-        for fiducial in seen:
-            print("{}".format(fiducial))
-    else:
-        print("No fiducials found!")
-    '''
-
-    return 0
 
 if __name__ == '__main__':
     sys.exit(main())
