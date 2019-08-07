@@ -18,7 +18,7 @@ def plot_error(x, y, z, vmin=None, vmax=None, cmap='RdBu',
                       default: 'RdBu'
     title (optional) - title to use for the plot
                        default: 'Localization Error'
-    method optional - interpolation method to be used
+    method (optional) - interpolation method to be used
                       default: 'nearest'
                       options: 'nearest', 'linear', 'cubic'
     '''

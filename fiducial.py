@@ -6,9 +6,11 @@ class Fiducial(object):
         self._pose = pose
         self._id = id
 
+    @property
     def pose(self) ->  Array[np.float64, 3, ...]:
         return self._pose
 
+    @property
     def id(self) -> int:
         return self._id
 

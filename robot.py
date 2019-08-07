@@ -5,6 +5,7 @@ from math import sin, cos, pi
 from camera import Camera
 from fiducial import Fiducial
 import random
+import logging
 
 class Robot(object):
     def __init__(self, id: int,
@@ -14,12 +15,13 @@ class Robot(object):
         self._id = id
         self._R = np.ones((3, 3))
         self._t = np.zeros((3, 1))
-        self._pose = pose
         self._cameras = []  # collection of cameras
         self._sd = sd  # standard deviation for noisy movement
         self._world_size = world_size  # 2D limits of the world in meters
+        self.pose = pose  # set pose using pose property
         # get the transform from robot to world coordinates
         self._update_robot_matrices()
+        logging.basicConfig(level=logging.INFO)
 
     def _update_robot_matrices(self) -> None:
         '''
@@ -33,7 +35,22 @@ class Robot(object):
                             [self._pose[1]],
                             [0]], dtype=np.float64)
 
-    def set_pose(self, pose: Array[np.float64, 3, 1]) -> None:
+    @property
+    def id(self) -> int:
+        '''
+        Gets the id of this robot
+        '''
+        return self._id
+
+    @property
+    def pose(self) -> Array[np.float64, 3, 1]:
+        '''
+        Gets the y, z coordinate and the direction the robot is facing
+        '''
+        return self._pose
+
+    @pose.setter
+    def pose(self, pose: Array[np.float64, 3, 1]) -> None:
         '''
         Set the pose of the robot (x, y, theta)
         '''
@@ -43,18 +60,6 @@ class Robot(object):
         self._pose[1] %= self._world_size[1]
 
         self._update_robot_matrices()
-
-    def id(self) -> int:
-        '''
-        Gets the id of this robot
-        '''
-        return self._id
-
-    def pose(self) -> Array[np.float64, 3, 1]:
-        '''
-        Gets the y, z coordinate and the direction the robot is facing
-        '''
-        return self._pose
 
     def attach_camera(self, camera: Camera) -> None:
         '''
@@ -70,15 +75,9 @@ class Robot(object):
         '''
         forward += random.uniform(0.0, self._sd)  # add some noise to our forward movement
         turn += random.uniform(0.0, self._sd)  # add some noise to our turn
-        self._pose[2] += turn
-        self._pose[0] += forward * cos(self._pose[2])
-        self._pose[1] += forward * sin(self._pose[2])
-
-        self._pose[2] %= (2 * pi)
-        self._pose[0] %= self._world_size[0]
-        self._pose[1] %= self._world_size[1]
-
-        self._update_robot_matrices()
+        self.pose += np.array([[forward * cos(self._pose[2])],
+                               [forward * sin(self._pose[2])],
+                               [turn]], dtype=np.float64)
 
     def find_fiducials(self, fiducials: List[Fiducial]) -> Set[Fiducial]:
         '''
@@ -87,7 +86,8 @@ class Robot(object):
         seen = set()
         for fiducial in fiducials:
             for camera in self._cameras:
-                if camera.is_visible(self._R, self._t, fiducial.pose()):
+                if camera.is_visible(self._R, self._t, fiducial.pose):
+                    logging.info("{}".format(fiducial))
                     seen = seen.union([fiducial])  # add to seen list
                     break  # don't need to find the fiducial more than once
 

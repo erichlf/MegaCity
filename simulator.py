@@ -13,7 +13,7 @@ class Simulator(object):
         self._monte_carlo_steps = 1000
         self._robots = robots
         self._fiducials = fiducials
-        self._state = {robot: robot.pose() for robot in self._robots}
+        self._state = {robot: robot.pose for robot in self._robots}
         self._world_size = world_size
 
     def simulate_true_move(self, robot: Robot, turn: float, forward: float) -> None:
