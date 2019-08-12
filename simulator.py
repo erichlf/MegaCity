@@ -38,18 +38,15 @@ class Simulator(object):
 
     def run(self) -> List[Fiducial]:
         seen = set()
-#        for step in range(1, self._monte_carlo_steps + 1):
         for robot in self._robots:
-            # get a random turn and forward
-            # delta = (random.uniform(0, 2 * pi), random.uniform(0, 1))
-            # have the robot move to the true location
-            # self.simulate_true_move(robot, delta[0], delta[1])
-            # have the robot itself move (robot will move with some error)
-            # robot.move(delta[0], delta[1])
-            found = robot.find_fiducials(self._fiducials)
-            seen = seen.union(found)
-            print("Robot - {} saw:".format(robot))
-            for fiducial in found:
-                print("\tFiducial - {}".format(fiducial))
+            for step in range(1, self._monte_carlo_steps + 1):
+                # get a random turn and forward
+                delta = (random.uniform(0, 2 * pi), random.uniform(0, 1))
+                # have the robot move to the true location
+                self.simulate_true_move(robot, delta[0], delta[1])
+                # have the robot itself move (robot will move with some error)
+                robot.move(delta[0], delta[1])
+                found = robot.find_fiducials(self._fiducials)
+                seen = seen.union(found)
 
         return list(seen)

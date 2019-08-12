@@ -1,9 +1,10 @@
 import sys
-from typing import Optional, List
+import yaml
 import numpy as np
 from nptyping import Array
+from typing import Optional, List
 from math import pi, atan, sqrt, isclose
-import yaml
+
 
 class Camera(object):
     '''
@@ -13,45 +14,32 @@ class Camera(object):
         - conversion of image coordinates on a plane to camera coordinates
         - visibility handling
     '''
-    def __init__(self) -> None:
-        self._camera_matrix = np.eye(4)  # camera intrinsic parameters
-        self._R = np.eye(3)
-        self._t = np.zeros((3, 1))
-        self._aspect_ratio = np.zeros((2,), dtype=int)
+    def __init__(self, intrinsics, extrinsics=None) -> None:
+        self._camera_matrix = np.array([
+            [intrinsics["fx"], 0, intrinsics["cx"]],
+            [0, intrinsics["fy"], intrinsics["cy"]],
+            [0, 0, 1]])
 
-    def load(self, filename: str) -> None:
-        '''
-        Load camera model from a YAML file.
-        Example::
-            cameraMatrix:
-                - [fx, s, cx]
-                - [0.0, fy, cy]
-                - [0.0, 0.0, 1.0]
-            R:
-                - [-0.9316877145365, -0.3608289515885, 0.002545329627547]
-                - [-0.1725273110187, 0.4247524018287, -0.8888909933995]
-                - [0.3296724908378, -0.8263880720441, -0.4579894432589]
-            t:
-                - [-1.365061486465]
-                - [3.431608806127]
-                - [17.74182159488]
-            aspect_ratio: [960, 768]
-        '''
-        data = yaml.load(open(filename))
-        if 'cameraMatrix' in data and 'R' in data and 't' in data and 'aspect_ratio' in data:
-            self._camera_matrix = np.array(data['cameraMatrix'], dtype=np.float64).reshape((3, 3))
-            self._R = np.array(data['R'], dtype=np.float64).reshape((3, 3))
-            self._t = np.array(data['t'], dtype=np.float64).reshape((3, 1))
-            self._aspect_ratio = np.array(data['aspect_ratio']).reshape((2,))
+        self._aspect_ratio = np.array([
+            intrinsics["image_size"]["height"],
+            intrinsics["image_size"]["width"]])
+
+        if extrinsics is None:
+            self._R = np.eye(3)
+            self._t = np.zeros((3, 1))
         else:
-            error("Nothing loaded from {}, check the contents.".format(filename))
-            sys.exit(1)
+            # TODO: Convert axis angle rotation to 3x3 matrix
+            self._R = np.eye(3)
+            self._t = np.array([
+                [extrinsics["x"]],
+                [extrinsics["y"]],
+                [extrinsics["z"]]])
 
     def _is_visible_xy(self, image_pts: Array[np.float64, 2, ...]) -> bool:
         '''
         Check the visibility of the image point(s)
         '''
-        return (image_pts[0, :] >=0) & (image_pts[1, :] >= 0) & \
+        return (image_pts[0, :] >= 0) & (image_pts[1, :] >= 0) & \
                (image_pts[0, :] < self._aspect_ratio[0]) & \
                (image_pts[1, :] < self._aspect_ratio[1])
 
@@ -71,7 +59,6 @@ class Camera(object):
         swapped_camera_to_world = camera_to_world.dot(axes_swap)
         world_to_camera_swapped = np.linalg.inv(swapped_camera_to_world)
         camera_pts = world_to_camera_swapped.dot(world_pts_h)
-
 
         if not all(camera_pts[2, :] > 1e-15):
             return False
