@@ -8,6 +8,10 @@ import random
 import logging
 
 class Robot(object):
+    '''
+    This class defines a simple differential robot. The robot is identified by
+    its numerical id, and a pose = (x, y, theta).
+    '''
     def __init__(self, id: int,
                  pose: Optional[Array[np.float64, 3, 1]]=np.zeros((3,)),
                  sd: Optional[float]=0.1,
@@ -83,12 +87,15 @@ class Robot(object):
         '''
         Find the fiducials which are in the camera view
         '''
-        seen = set()
+        seen = []
         for fiducial in fiducials:
             for camera in self._cameras:
-                if camera.is_visible(self._R, self._t, fiducial.pose):
-                    logging.info("{}".format(fiducial))
-                    seen = seen.union([fiducial])  # add to seen list
+                fiducial_image = camera.is_visible(self._R, self._t, fiducial.pose)
+                if fiducial_image is not None:
+                    logging.info("Robot: {}\tid: {}\tpose: {}".format(self.id,
+                                                                      fiducial.id,
+                                                                      fiducial_image.T))
+                    seen.append([fiducial.id, fiducial_image.T])  # add to seen list
                     break  # don't need to find the fiducial more than once
 
         return seen

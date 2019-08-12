@@ -37,16 +37,16 @@ class Simulator(object):
         self._state[robot] = (x, y, theta)
 
     def run(self) -> List[Fiducial]:
-        seen = set()
+        seen = []
         for robot in self._robots:
-            for step in range(1, self._monte_carlo_steps + 1):
+            # for step in range(1, self._monte_carlo_steps + 1):
                 # get a random turn and forward
-                delta = (random.uniform(0, 2 * pi), random.uniform(0, 1))
+                # delta = (random.uniform(0, 2 * pi), random.uniform(0, 1))
                 # have the robot move to the true location
-                self.simulate_true_move(robot, delta[0], delta[1])
+                # self.simulate_true_move(robot, delta[0], delta[1])
                 # have the robot itself move (robot will move with some error)
-                robot.move(delta[0], delta[1])
-                found = robot.find_fiducials(self._fiducials)
-                seen = seen.union(found)
+                # robot.move(delta[0], delta[1])
+            found = robot.find_fiducials(self._fiducials)
+            seen.append(found)
 
-        return list(seen)
+        return seen

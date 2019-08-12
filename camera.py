@@ -45,9 +45,10 @@ class Camera(object):
 
     def is_visible(self, R_robot: Array[np.float64, 3, 3],
                    t_robot: Array[np.float64, 3, 1],
-                   world_pts: Array[np.float64, 3, ...]) -> bool:
+                   world_pts: Array[np.float64, 3, ...]) -> Array[np.float64, 2, ...]:
         '''
-        Check the visibility of the world point(s)
+        Check the visibility of the world point(s) and return the image
+        coordinates if they are visible.
         '''
         world_pts_h = np.append(world_pts, [np.ones_like(world_pts[0, :])], axis=0)
 
@@ -61,9 +62,12 @@ class Camera(object):
         camera_pts = world_to_camera_swapped.dot(world_pts_h)
 
         if not all(camera_pts[2, :] > 1e-15):
-            return False
+            return None
 
         image_pts = self._camera_matrix.dot(camera_pts[0:3, :])  # [[u], [v], [w]]
         image_pts_h = ((image_pts.T / image_pts[-1, :].reshape((image_pts.shape[1],1))).T)  # [[u/w], [v/w]]
 
-        return all(camera_pts[2, :] > 1e-15) and all(self._is_visible_xy(image_pts_h))
+        if all(camera_pts[2, :] > 1e-15) and all(self._is_visible_xy(image_pts_h)):
+            return image_pts_h[0:2,:]
+        else:
+            return None
