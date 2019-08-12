@@ -54,11 +54,10 @@ class Camera(object):
 
         robot_to_world = np.append(np.append(R_robot, t_robot, axis=1), [[0, 0, 0, 1]], axis=0)
         camera_to_robot = np.append(np.append(self._R, self._t, axis=1), [[0, 0, 0, 1]], axis=0)
-        camera_to_world = camera_to_robot.dot(robot_to_world)
+        world_to_camera = robot_to_world.T.dot(camera_to_robot.T)
         # swaps axes to correspond to the image frame
-        axes_swap = np.array([[0, 0, 1, 0], [-1, 0, 0, 0], [0, -1, 0, 0], [0, 0, 0, 1]])
-        swapped_camera_to_world = camera_to_world.dot(axes_swap)
-        world_to_camera_swapped = np.linalg.inv(swapped_camera_to_world)
+        axes_swap = np.array([[0, -1, 0, 0], [0, 0, -1, 0], [1, 0, 0, 0], [0, 0, 0, 1]])
+        world_to_camera_swapped = axes_swap.dot(world_to_camera)
         camera_pts = world_to_camera_swapped.dot(world_pts_h)
 
         if not all(camera_pts[2, :] > 1e-15):
